@@ -1,0 +1,92 @@
+Ollama up, llama3.2:3b available
+==============================================================================
+ TOOL-USING AGENT WITH FALLBACK LOGIC
+==============================================================================
+
+--- 1. tool: plain arithmetic
+    Q: What is 12 * 8?
+    ROUTE: TOOL via Calculator   (1 ms)
+    WHY  : evaluated 12 * 8
+    A: 96
+
+--- 2. tool: function plus arithmetic
+    Q: What is sqrt(144) + 5?
+    ROUTE: TOOL via Calculator   (0 ms)
+    WHY  : evaluated sqrt(144) + 5
+    A: 17
+
+--- 3. tool: topic found in the index
+    Q: Tell me something about Tunisia
+    ROUTE: TOOL via Search   (0 ms)
+    WHY  : matched topic 'tunisia'
+    A: Tunisia is a North African country on the Mediterranean coast, bordered by Algeria to the west and Libya to the south-east. Its capital is Tunis. Carthage, just outside the capital, was the centre of the Carthaginian empire and is now a UNESCO World Heritage site. Arabic is the official language and French is widely used in business.
+
+--- 4. fallback: the search backend errors
+    Q: Search 404 test
+    ROUTE: FALLBACK via LLM   (6838 ms)
+    WHY  : Search failed: search backend returned HTTP 404 (index unavailable)
+    A: I don't have a specific "Search 404 test" in mind, but I can suggest a simple test to verify if a search function is working: try searching for a non-existent term or phrase, such as "made up word" or "non-existent topic", and see if the search returns a "not found" or "404 error" message.
+
+--- 5. fallback: the search tool hangs past its deadline
+    Q: Search timeout please
+    ROUTE: FALLBACK via LLM   (8034 ms)
+    WHY  : Search timed out: Search exceeded its 2.0s deadline
+    A: I don't have a specific timeout value to provide. The concept of a "search timeout" can vary depending on the context and application, and I don't have enough information to determine a suitable timeout value. If you could provide more context or clarify what you're referring to, I'd be happy to try and assist you further.
+
+--- 6. fallback: the calculator cannot answer
+    Q: What is 5 / 0?
+    ROUTE: FALLBACK via LLM   (4287 ms)
+    WHY  : Calculator failed: division by zero
+    A: I don't have a specific answer for this question as division by zero is undefined in standard arithmetic. In mathematics, division by zero is considered an invalid operation, and most calculators will display an error message or indicate that the result is undefined.
+
+--- 7. fallback: no results in the index
+    Q: Search the mating habits of the Norwegian blue parrot
+    ROUTE: FALLBACK via LLM   (6884 ms)
+    WHY  : Search failed: no results in the local index for that query
+    A: I don't have specific information on the mating habits of the Norwegian blue parrot. However, I can tell you that parrots in general are social birds that often form long-term monogamous relationships, and breeding typically occurs in the wild or in captivity with a mate. If you're looking for more detailed information, I may not be able to provide it.
+
+--- 8. fallback: tool answered, but too thin to serve
+    Q: Tell me about quantum computing
+    ROUTE: FALLBACK via LLM   (7747 ms)
+    WHY  : Search returned a weak answer (answer too short)
+    A: Quantum computing is a new approach to computing that uses the principles of quantum mechanics to perform calculations and operations on data. It is based on the idea that certain properties of matter, such as spin and superposition, can be used to perform calculations that are beyond the capabilities of classical computers. Quantum computers have the potential to solve certain problems much faster than classical computers, but they are still in the early stages of development.
+
+--- 9. no tool: a typo must not become a wrong answer
+    Q: What is sqr(144)?
+    ROUTE: DIRECT via LLM   (1438 ms)
+    WHY  : no tool scored above 0.5 (best 0.40)
+    A: The square root of 144 is 12.
+
+--- 10. direct: no tool applies
+    Q: Who are you?
+    ROUTE: DIRECT via LLM   (5115 ms)
+    WHY  : no tool scored above 0.5 (best 0.00)
+    A: I am a concise assistant, here to provide information and answer questions to the best of my ability. I don't have personal experiences or emotions, and my responses are based on my training data. I'll do my best to provide accurate and helpful answers.
+
+--- 11. direct: reasoning, not lookup
+    Q: Why is fallback logic important for an agent?
+    ROUTE: DIRECT via LLM   (6978 ms)
+    WHY  : no tool scored above 0.5 (best 0.30)
+    A: Fallback logic is important for an agent because it allows the agent to recover from unexpected or unforeseen situations, ensuring it can continue to function and achieve its goals. By incorporating fallback logic, an agent can mitigate the impact of failures or uncertainties, maintaining its overall performance and reliability. This is particularly crucial in complex, dynamic environments where adaptability and resilience are essential.
+
+==============================================================================
+ SUMMARY
+==============================================================================
+  TOOL          3
+  FALLBACK      5
+  DIRECT        3
+  TOTAL        11
+
+  route table
+  #   route        source           ms  question
+  1   TOOL         Calculator        1  What is 12 * 8?
+  2   TOOL         Calculator        0  What is sqrt(144) + 5?
+  3   TOOL         Search            0  Tell me something about Tunisia
+  4   FALLBACK     LLM            6838  Search 404 test
+  5   FALLBACK     LLM            8034  Search timeout please
+  6   FALLBACK     LLM            4287  What is 5 / 0?
+  7   FALLBACK     LLM            6884  Search the mating habits of the Norwegian...
+  8   FALLBACK     LLM            7747  Tell me about quantum computing
+  9   DIRECT       LLM            1438  What is sqr(144)?
+  10  DIRECT       LLM            5115  Who are you?
+  11  DIRECT       LLM            6978  Why is fallback logic important for an ag...
