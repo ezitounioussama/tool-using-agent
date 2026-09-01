@@ -14,10 +14,10 @@ Every answer is logged with the route that produced it, and `FALLBACK` is kept s
 `DIRECT` on purpose: one means a tool broke, the other means no tool was needed. Five fallbacks in
 a row is an outage; five direct answers is a normal day.
 
-Runs locally on Ollama, no API key, standard library only.
+Runs locally on Ollama (`qwen3:8b`), no API key, standard library only.
 
 ```bash
-ollama serve && ollama pull llama3.2:3b
+ollama serve && ollama pull qwen3:8b
 
 python3 run_demo.py     # 11 queries, all four routes
 python3 tests.py        # 43 tests, no model needed

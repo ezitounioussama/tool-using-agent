@@ -5,7 +5,7 @@ import urllib.error
 import urllib.request
 
 HOST = "http://localhost:11434"
-MODEL = "llama3.2:3b"
+MODEL = "qwen3:8b"
 
 # Kept low so the same question gives the same answer twice; the point of this
 # checkpoint is the routing, and a wandering model makes routes hard to compare.
@@ -32,6 +32,10 @@ def generate(prompt, system=None, timeout=60, max_tokens=220):
         "model": MODEL,
         "prompt": prompt,
         "stream": False,
+        # qwen3 is a hybrid-reasoning model: left on, it puts its chain of thought
+        # in a separate "thinking" field and returns an EMPTY "response". Every
+        # caller here wants the answer, so thinking is off.
+        "think": False,
         "options": {"temperature": TEMPERATURE, "num_predict": max_tokens},
     }
     if system:
