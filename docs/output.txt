@@ -1,4 +1,4 @@
-Ollama up, llama3.2:3b available
+Ollama up, qwen3:8b available
 ==============================================================================
  TOOL-USING AGENT WITH FALLBACK LOGIC
 ==============================================================================
@@ -23,51 +23,51 @@ Ollama up, llama3.2:3b available
 
 --- 4. fallback: the search backend errors
     Q: Search 404 test
-    ROUTE: FALLBACK via LLM   (6838 ms)
+    ROUTE: FALLBACK via LLM   (13596 ms)
     WHY  : Search failed: search backend returned HTTP 404 (index unavailable)
-    A: I don't have a specific "Search 404 test" in mind, but I can suggest a simple test to verify if a search function is working: try searching for a non-existent term or phrase, such as "made up word" or "non-existent topic", and see if the search returns a "not found" or "404 error" message.
+    A: A 404 test typically involves checking if a webpage or resource returns a "404 Not Found" error when accessed. This is often used to verify that broken links or missing content are properly handled by a website. The term "Search 404 test" might refer to testing how a search function handles non-existent pages or results.
 
 --- 5. fallback: the search tool hangs past its deadline
     Q: Search timeout please
-    ROUTE: FALLBACK via LLM   (8034 ms)
+    ROUTE: FALLBACK via LLM   (11711 ms)
     WHY  : Search timed out: Search exceeded its 2.0s deadline
-    A: I don't have a specific timeout value to provide. The concept of a "search timeout" can vary depending on the context and application, and I don't have enough information to determine a suitable timeout value. If you could provide more context or clarify what you're referring to, I'd be happy to try and assist you further.
+    A: A "search timeout" typically means the system could not complete a search within the allowed time. This can occur due to slow response times, heavy server load, or incomplete query parameters. To resolve it, try simplifying the query or checking your internet connection.
 
 --- 6. fallback: the calculator cannot answer
     Q: What is 5 / 0?
-    ROUTE: FALLBACK via LLM   (4287 ms)
+    ROUTE: FALLBACK via LLM   (7433 ms)
     WHY  : Calculator failed: division by zero
-    A: I don't have a specific answer for this question as division by zero is undefined in standard arithmetic. In mathematics, division by zero is considered an invalid operation, and most calculators will display an error message or indicate that the result is undefined.
+    A: Dividing any number by zero is undefined in mathematics. It does not result in a real number and is considered an invalid operation. The expression 5 / 0 has no meaningful value.
 
 --- 7. fallback: no results in the index
     Q: Search the mating habits of the Norwegian blue parrot
-    ROUTE: FALLBACK via LLM   (6884 ms)
+    ROUTE: FALLBACK via LLM   (12290 ms)
     WHY  : Search failed: no results in the local index for that query
-    A: I don't have specific information on the mating habits of the Norwegian blue parrot. However, I can tell you that parrots in general are social birds that often form long-term monogamous relationships, and breeding typically occurs in the wild or in captivity with a mate. If you're looking for more detailed information, I may not be able to provide it.
+    A: The Norwegian blue parrot, also known as the African grey parrot, is monogamous and forms long-term pair bonds. Mating typically occurs during the rainy season, with the male performing courtship displays to attract a female. The female lays 2-4 eggs, which both parents incubate and care for.
 
 --- 8. fallback: tool answered, but too thin to serve
     Q: Tell me about quantum computing
-    ROUTE: FALLBACK via LLM   (7747 ms)
+    ROUTE: FALLBACK via LLM   (16002 ms)
     WHY  : Search returned a weak answer (answer too short)
-    A: Quantum computing is a new approach to computing that uses the principles of quantum mechanics to perform calculations and operations on data. It is based on the idea that certain properties of matter, such as spin and superposition, can be used to perform calculations that are beyond the capabilities of classical computers. Quantum computers have the potential to solve certain problems much faster than classical computers, but they are still in the early stages of development.
+    A: Quantum computing is a computing paradigm that leverages the principles of quantum mechanics, such as superposition and entanglement, to perform operations on data. Unlike classical computers, which use bits as the basic unit of information, quantum computers use qubits, which can exist in multiple states simultaneously. This allows quantum computers to solve certain problems, like factoring large numbers or simulating quantum systems, much more efficiently than classical computers.
 
 --- 9. no tool: a typo must not become a wrong answer
     Q: What is sqr(144)?
-    ROUTE: DIRECT via LLM   (1438 ms)
+    ROUTE: DIRECT via LLM   (3001 ms)
     WHY  : no tool scored above 0.5 (best 0.40)
     A: The square root of 144 is 12.
 
 --- 10. direct: no tool applies
     Q: Who are you?
-    ROUTE: DIRECT via LLM   (5115 ms)
+    ROUTE: DIRECT via LLM   (8677 ms)
     WHY  : no tool scored above 0.5 (best 0.00)
-    A: I am a concise assistant, here to provide information and answer questions to the best of my ability. I don't have personal experiences or emotions, and my responses are based on my training data. I'll do my best to provide accurate and helpful answers.
+    A: I am Qwen, a large language model developed by Alibaba Cloud. I can assist with a wide range of tasks, from answering questions to creating content. I am designed to be helpful, efficient, and easy to use.
 
 --- 11. direct: reasoning, not lookup
     Q: Why is fallback logic important for an agent?
-    ROUTE: DIRECT via LLM   (6978 ms)
+    ROUTE: DIRECT via LLM   (10023 ms)
     WHY  : no tool scored above 0.5 (best 0.30)
-    A: Fallback logic is important for an agent because it allows the agent to recover from unexpected or unforeseen situations, ensuring it can continue to function and achieve its goals. By incorporating fallback logic, an agent can mitigate the impact of failures or uncertainties, maintaining its overall performance and reliability. This is particularly crucial in complex, dynamic environments where adaptability and resilience are essential.
+    A: Fallback logic is important for an agent because it ensures the agent can handle unexpected situations or errors gracefully. It provides a safety net when primary methods fail, maintaining system stability and user trust. Without it, an agent might crash or provide incorrect responses in uncertain scenarios.
 
 ==============================================================================
  SUMMARY
@@ -82,11 +82,11 @@ Ollama up, llama3.2:3b available
   1   TOOL         Calculator        1  What is 12 * 8?
   2   TOOL         Calculator        0  What is sqrt(144) + 5?
   3   TOOL         Search            0  Tell me something about Tunisia
-  4   FALLBACK     LLM            6838  Search 404 test
-  5   FALLBACK     LLM            8034  Search timeout please
-  6   FALLBACK     LLM            4287  What is 5 / 0?
-  7   FALLBACK     LLM            6884  Search the mating habits of the Norwegian...
-  8   FALLBACK     LLM            7747  Tell me about quantum computing
-  9   DIRECT       LLM            1438  What is sqr(144)?
-  10  DIRECT       LLM            5115  Who are you?
-  11  DIRECT       LLM            6978  Why is fallback logic important for an ag...
+  4   FALLBACK     LLM           13596  Search 404 test
+  5   FALLBACK     LLM           11711  Search timeout please
+  6   FALLBACK     LLM            7433  What is 5 / 0?
+  7   FALLBACK     LLM           12290  Search the mating habits of the Norwegian...
+  8   FALLBACK     LLM           16002  Tell me about quantum computing
+  9   DIRECT       LLM            3001  What is sqr(144)?
+  10  DIRECT       LLM            8677  Who are you?
+  11  DIRECT       LLM           10023  Why is fallback logic important for an ag...

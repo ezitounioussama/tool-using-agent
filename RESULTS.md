@@ -7,7 +7,7 @@ Everything on this page came out of a real run on this machine. The raw terminal
 
 | | |
 |---|---|
-| Model | `llama3.2:3b` via local Ollama (`ollama serve`) |
+| Model | `qwen3:8b` via local Ollama (`ollama serve`), thinking disabled |
 | Temperature | `0.1` |
 | Dependencies | none — standard library only (`urllib`, `ast`, `math`, `concurrent.futures`) |
 | Tests | 43, no model or network needed |
@@ -15,7 +15,7 @@ Everything on this page came out of a real run on this machine. The raw terminal
 Reproduce with:
 
 ```bash
-ollama serve && ollama pull llama3.2:3b
+ollama serve && ollama pull qwen3:8b
 python3 run_demo.py
 python3 tests.py
 ```
@@ -29,18 +29,20 @@ python3 tests.py
 | 1 | TOOL | Calculator | 1 | What is 12 * 8? |
 | 2 | TOOL | Calculator | 0 | What is sqrt(144) + 5? |
 | 3 | TOOL | Search | 0 | Tell me something about Tunisia |
-| 4 | FALLBACK | LLM | 6838 | Search 404 test |
-| 5 | FALLBACK | LLM | 8034 | Search timeout please |
-| 6 | FALLBACK | LLM | 4287 | What is 5 / 0? |
-| 7 | FALLBACK | LLM | 6884 | Search the mating habits of the Norwegian blue parrot |
-| 8 | FALLBACK | LLM | 7747 | Tell me about quantum computing |
-| 9 | DIRECT | LLM | 1438 | What is sqr(144)? |
-| 10 | DIRECT | LLM | 5115 | Who are you? |
-| 11 | DIRECT | LLM | 6978 | Why is fallback logic important for an agent? |
+| 4 | FALLBACK | LLM | 13596 | Search 404 test |
+| 5 | FALLBACK | LLM | 11711 | Search timeout please |
+| 6 | FALLBACK | LLM | 7433 | What is 5 / 0? |
+| 7 | FALLBACK | LLM | 12290 | Search the mating habits of the Norwegian blue parrot |
+| 8 | FALLBACK | LLM | 16002 | Tell me about quantum computing |
+| 9 | DIRECT | LLM | 3001 | What is sqr(144)? |
+| 10 | DIRECT | LLM | 8677 | Who are you? |
+| 11 | DIRECT | LLM | 10023 | Why is fallback logic important for an agent? |
 
 **TOOL 3, FALLBACK 5, DIRECT 3.** A tool answer costs about 1 ms; every route that reaches the
-model costs 1.4–8 s. That gap is the argument for routing at all — the model is the expensive,
-approximate path, and a calculator is exact and free.
+model costs 3–16 s. That gap is the argument for routing at all — the model is the expensive,
+approximate path, and a calculator is exact and free. The gap widened when the model was switched
+from `llama3.2:3b` to `qwen3:8b`: better answers on the routes that need one, and 2× the latency
+on every route that reaches it.
 
 `FALLBACK` and `DIRECT` both end at the model but are logged apart on purpose. `DIRECT` means no
 tool was appropriate; `FALLBACK` means a tool was tried and did not deliver. Collapsing them
@@ -57,7 +59,8 @@ normal day.
 Q: Search 404 test
 ROUTE: FALLBACK via LLM
 WHY  : Search failed: search backend returned HTTP 404 (index unavailable)
-A: I don't have a specific "Search 404" test, but I can try to provide a general answer. [...]
+A: A 404 test typically involves checking if a webpage or resource returns a "404 Not Found"
+   error when accessed. [...]
 ```
 
 **2. Tool timeout — the tool hangs past its deadline**
@@ -77,7 +80,8 @@ The deadline is enforced by the agent, not trusted to the tool. Measured: the ag
 Q: What is 5 / 0?
 ROUTE: FALLBACK via LLM
 WHY  : Calculator failed: division by zero
-A: [...] division by zero is undefined in mathematics. It's not a valid mathematical operation [...]
+A: Dividing any number by zero is undefined in mathematics. It does not result in a real number
+   and is considered an invalid operation. The expression 5 / 0 has no meaningful value.
 ```
 
 **4. Tool ran fine and found nothing — irrelevant query**
@@ -94,9 +98,8 @@ WHY  : Search failed: no results in the local index for that query
 Q: Tell me about quantum computing
 ROUTE: FALLBACK via LLM
 WHY  : Search returned a weak answer (answer too short)
-A: Quantum computing is a new approach to computing that uses the principles of quantum mechanics
-   to perform calculations [...] Quantum computers use qubits, which can exist in multiple states
-   simultaneously [...]
+A: Quantum computing is a computing paradigm that leverages the principles of quantum mechanics,
+   such as superposition and entanglement, to perform operations on data. [...]
 ```
 
 The index holds exactly `"It is a computing paradigm."` for that topic. Nothing failed, nothing
@@ -156,10 +159,11 @@ after:   ROUTE: DIRECT via LLM   (6978 ms)
          WHY  : no tool scored above 0.5 (best 0.30)
          A: Fallback logic is important for an agent because it allows the agent to recover from
             unexpected or unforeseen situations, ensuring it can continue to function and achieve
-            its goals. [...]
+            its goals. [...]  (captured with llama3.2:3b; qwen3:8b answers the same question in
+            the same DIRECT route)
 ```
 
-Worth noting the cost direction: the fix made the answer 7000× slower and much better. Routing is
+Worth noting the cost direction: the fix made the answer thousands of times slower and much better. Routing is
 a quality decision before it is a speed one.
 
 ---
